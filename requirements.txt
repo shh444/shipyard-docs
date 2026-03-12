@@ -1,0 +1,4 @@
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+sphinx-multiversion==0.2.4
+myst-parser==2.0.0
