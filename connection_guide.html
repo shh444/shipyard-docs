@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연결 가이드 - Shipyard Welding</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">⚓</div>
+            <h2>Shipyard Welding</h2>
+            <p>Modbus TCP Manual</p>
+        </div>
+        <ul class="menu">
+            <li><a href="index.html">홈</a></li>
+            <li><a href="overview.html">시스템 개요</a></li>
+            <li><a href="protocol_spec.html">통신 프로토콜 사양</a></li>
+            <li class="menu-section">주소 맵</li>
+            <li><a href="address_map_robot_to_pendant.html">로봇 → 펜던트</a></li>
+            <li><a href="address_map_pendant_to_robot.html">펜던트 → 로봇</a></li>
+            <li><a href="address_map_robot_to_welder.html">로봇 → 용접기</a></li>
+            <li><a href="address_map_welder_to_robot.html">용접기 → 로봇</a></li>
+            <li><a href="ur_robot_data.html">UR 로봇 데이터</a></li>
+            <li class="menu-section">참고 자료</li>
+            <li><a href="connection_guide.html" class="active">연결 가이드</a></li>
+            <li><a href="examples.html">예제 코드</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Version 1.0</p>
+            <p>Last Updated: 2024</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <h1>연결 가이드</h1>
+            <p class="subtitle">하드웨어 연결 및 네트워크 설정 방법</p>
+        </header>
+
+        <section>
+            <h2>1. 시스템 구성도</h2>
+            <div class="connection-diagram">
+                <pre class="diagram">
+┌────────────────────────────────────────────────────────────────┐
+│                     Ethernet Network                           │
+│                     192.168.1.x/24                            │
+└──────────┬─────────────────────┬──────────────────────────────┘
+           │                     │
+    ┌──────▼────────┐    ┌──────▼──────────┐
+    │  UR 협동로봇   │    │  Hi-COMM        │
+    │               │    │  Ethernet       │
+    │ IP: 192.168.1.7│    │  IP: 192.168.1.2│
+    │ Port: 502     │    │  Port: 502      │
+    │               │    │                 │
+    │ Modbus TCP    │    │  Modbus TCP     │
+    │ Slave         │    │  Master         │
+    └───────────────┘    └─────────────────┘
+         │                        │
+         │                        │
+    (용접 토치)              (용접 전원)
+                </pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. 하드웨어 연결</h2>
+            
+            <h3>2.1 필요 장비</h3>
+            <div class="equipment-list">
+                <div class="equipment-item">
+                    <div class="equipment-icon">🤖</div>
+                    <div class="equipment-info">
+                        <h4>UR 협동로봇</h4>
+                        <ul>
+                            <li>UR3 / UR5 / UR10</li>
+                            <li>URCap 소프트웨어 설치 필요</li>
+                            <li>이더넷 포트: RJ45</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="equipment-item">
+                    <div class="equipment-icon">⚡</div>
+                    <div class="equipment-info">
+                        <h4>Hi-COMM Ethernet</h4>
+                        <ul>
+                            <li>용접기 제어 컨버터</li>
+                            <li>Modbus TCP Master 기능</li>
+                            <li>이더넷 포트: RJ45</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="equipment-item">
+                    <div class="equipment-icon">🔌</div>
+                    <div class="equipment-info">
+                        <h4>네트워크 장비</h4>
+                        <ul>
+                            <li>이더넷 케이블 (Cat5e 이상)</li>
+                            <li>네트워크 스위치 (선택사항)</li>
+                            <li>PC (설정 및 모니터링용)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>2.2 물리적 연결</h3>
+            <div class="step-list">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <div class="step-content">
+                        <h4>UR 로봇 이더넷 연결</h4>
+                        <p>UR 로봇 컨트롤 박스의 이더넷 포트에 케이블 연결</p>
+                        <ul>
+                            <li>케이블 규격: Cat5e 이상</li>
+                            <li>최대 케이블 길이: 100m</li>
+                            <li>커넥터: RJ45</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <div class="step-content">
+                        <h4>Hi-COMM Ethernet 연결</h4>
+                        <p>Hi-COMM Ethernet의 이더넷 포트에 케이블 연결</p>
+                        <ul>
+                            <li>용접기와 CAN 통신 연결 확인</li>
+                            <li>전원 공급 확인 (DC 24V)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <div class="step-content">
+                        <h4>네트워크 스위치 연결 (선택)</h4>
+                        <p>여러 장치를 연결할 경우 스위치 사용</p>
+                        <ul>
+                            <li>PoE 미지원 스위치 권장</li>
+                            <li>10/100 Mbps 지원</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">4</span>
+                    <div class="step-content">
+                        <h4>LED 상태 확인</h4>
+                        <p>각 장치의 이더넷 LED 확인</p>
+                        <ul>
+                            <li>Link LED: 녹색 점등 (연결됨)</li>
+                            <li>Activity LED: 깜빡임 (데이터 전송 중)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>3. UR 로봇 네트워크 설정</h2>
+            
+            <h3>3.1 티칭 팬던트에서 설정</h3>
+            <div class="config-steps">
+                <div class="config-step">
+                    <strong>단계 1:</strong> UR 티칭 팬던트 전원 ON
+                </div>
+                <div class="config-step">
+                    <strong>단계 2:</strong> 메인 화면에서 <code>설정</code> 메뉴 선택
+                </div>
+                <div class="config-step">
+                    <strong>단계 3:</strong> <code>시스템</code> → <code>네트워크</code> 선택
+                </div>
+                <div class="config-step">
+                    <strong>단계 4:</strong> IP 설정 변경
+                    <pre><code>IP 주소: 192.168.1.7
+서브넷 마스크: 255.255.255.0
+게이트웨이: 192.168.1.1
+DNS: (필요시 설정)</code></pre>
+                </div>
+                <div class="config-step">
+                    <strong>단계 5:</strong> <code>적용</code> 버튼 클릭
+                </div>
+                <div class="config-step">
+                    <strong>단계 6:</strong> 로봇 재부팅 (설정 적용)
+                </div>
+            </div>
+
+            <div class="info-box tip">
+                <h4>💡 IP 주소 변경 시 주의사항</h4>
+                <ul>
+                    <li>Hi-COMM Ethernet와 동일한 서브넷에 설정해야 합니다</li>
+                    <li>IP 주소 충돌이 없는지 확인하세요 (ping 테스트)</li>
+                    <li>변경 후 반드시 재부팅하여 설정을 적용하세요</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Hi-COMM Ethernet 네트워크 설정</h2>
+            
+            <h3>4.1 설정 도구 사용</h3>
+            <p>Hi-COMM Ethernet의 IP 주소는 전용 설정 도구를 통해 변경합니다.</p>
+            
+            <div class="notice warning">
+                <div class="notice-icon">⚠️</div>
+                <div class="notice-content">
+                    <h4>설정 방법</h4>
+                    <p>Hi-COMM Ethernet의 IP 설정 변경은 제조사 제공 설정 도구를 사용해야 합니다.</p>
+                    <p>자세한 내용은 <strong>"Hi-COMM Ethernet Device Description Sheet"</strong> 문서를 참조하세요.</p>
+                </div>
+            </div>
+
+            <h3>4.2 기본 네트워크 설정</h3>
+            <div class="config-box">
+                <div class="config-item">
+                    <span class="config-label">IP 주소:</span>
+                    <span class="config-value">192.168.1.2 (기본값)</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">서브넷 마스크:</span>
+                    <span class="config-value">255.255.255.0</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">게이트웨이:</span>
+                    <span class="config-value">192.168.1.1</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Modbus TCP 포트:</span>
+                    <span class="config-value">502</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>5. 통신 테스트</h2>
+            
+            <h3>5.1 Ping 테스트</h3>
+            <div class="test-procedure">
+                <h4>Windows/Linux PC에서 테스트</h4>
+                <pre><code># UR 로봇 연결 테스트
+ping 192.168.1.7
+
+# 성공 시 출력:
+Reply from 192.168.1.7: bytes=32 time<1ms TTL=64
+
+# Hi-COMM Ethernet 연결 테스트
+ping 192.168.1.2
+
+# 성공 시 출력:
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=64</code></pre>
+            </div>
+
+            <h3>5.2 포트 확인</h3>
+            <div class="test-procedure">
+                <h4>Telnet으로 Modbus TCP 포트 확인</h4>
+                <pre><code># Windows
+telnet 192.168.1.7 502
+
+# Linux/Mac
+telnet 192.168.1.7 502
+
+# 또는 nc (netcat) 사용
+nc -zv 192.168.1.7 502
+
+# 성공 시 출력:
+Connection to 192.168.1.7 port 502 [tcp/*] succeeded!</code></pre>
+            </div>
+
+            <h3>5.3 Python으로 Modbus 연결 테스트</h3>
+            <div class="code-example">
+                <pre><code>from pymodbus.client import ModbusTcpClient
+
+# 연결 테스트
+print("UR 로봇 연결 테스트...")
+client = ModbusTcpClient('192.168.1.7', port=502)
+
+if client.connect():
+    print("✓ UR 로봇 연결 성공")
+    
+    # 로봇 모드 읽기 테스트
+    result = client.read_input_registers(address=258, count=1, unit=1)
+    if not result.isError():
+        robot_mode = result.registers[0]
+        modes = {0: "Disconnected", 5: "Idle", 7: "Running"}
+        print(f"  로봇 모드: {modes.get(robot_mode, f'Unknown({robot_mode})')}")
+    
+    client.close()
+else:
+    print("✗ UR 로봇 연결 실패")
+    print("  - IP 주소 확인")
+    print("  - 케이블 연결 확인")
+    print("  - 방화벽 설정 확인")</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>6. 방화벽 설정</h2>
+            
+            <h3>6.1 Windows 방화벽</h3>
+            <div class="firewall-config">
+                <h4>방법 1: GUI 설정</h4>
+                <ol>
+                    <li>제어판 → Windows Defender 방화벽</li>
+                    <li>고급 설정 클릭</li>
+                    <li>인바운드 규칙 → 새 규칙</li>
+                    <li>포트 → TCP → 특정 로컬 포트: 502</li>
+                    <li>연결 허용 → 모든 프로필 → 이름: "Modbus TCP"</li>
+                </ol>
+
+                <h4>방법 2: PowerShell (관리자 권한)</h4>
+                <pre><code>New-NetFirewallRule -DisplayName "Modbus TCP" `
+    -Direction Inbound `
+    -Protocol TCP `
+    -LocalPort 502 `
+    -Action Allow</code></pre>
+            </div>
+
+            <h3>6.2 Linux 방화벽 (iptables)</h3>
+            <div class="firewall-config">
+                <pre><code># Modbus TCP 포트 허용
+sudo iptables -A INPUT -p tcp --dport 502 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 502 -j ACCEPT
+
+# 설정 저장 (Ubuntu/Debian)
+sudo iptables-save | sudo tee /etc/iptables/rules.v4
+
+# 또는 firewalld 사용 (CentOS/RHEL)
+sudo firewall-cmd --permanent --add-port=502/tcp
+sudo firewall-cmd --reload</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>7. URCap 설치 (선택사항)</h2>
+            
+            <div class="info-box">
+                <h4>📦 URCap이란?</h4>
+                <p>URCap은 UR 로봇의 기능을 확장하는 플러그인입니다. 용접 자동화를 위한 전용 URCap을 설치하면 더 편리하게 사용할 수 있습니다.</p>
+            </div>
+
+            <h3>7.1 URCap 설치 절차</h3>
+            <div class="step-list">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <div class="step-content">
+                        <h4>URCap 파일 준비</h4>
+                        <p>용접 시스템 전용 URCap 파일(.urcap) 다운로드</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <div class="step-content">
+                        <h4>USB 드라이브 복사</h4>
+                        <p>.urcap 파일을 USB 드라이브에 복사</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <div class="step-content">
+                        <h4>UR 로봇에 연결</h4>
+                        <p>USB 드라이브를 UR 컨트롤 박스에 연결</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">4</span>
+                    <div class="step-content">
+                        <h4>URCap 설치</h4>
+                        <p>티칭 팬던트: 설정 → URCaps → + 버튼</p>
+                        <p>USB에서 .urcap 파일 선택 후 설치</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span class="step-num">5</span>
+                    <div class="step-content">
+                        <h4>로봇 재부팅</h4>
+                        <p>URCap 적용을 위해 로봇 재부팅</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>8. 트러블슈팅</h2>
+            
+            <div class="troubleshooting">
+                <div class="trouble-item">
+                    <h4>❌ Ping이 안 됨</h4>
+                    <div class="trouble-solution">
+                        <strong>원인:</strong>
+                        <ul>
+                            <li>케이블 연결 불량</li>
+                            <li>IP 주소 설정 오류</li>
+                            <li>네트워크 장비 문제</li>
+                        </ul>
+                        <strong>해결:</strong>
+                        <ul>
+                            <li>케이블 연결 상태 확인 (LED 점등)</li>
+                            <li>IP 주소가 동일 서브넷인지 확인</li>
+                            <li>장비 전원 재시작</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ Modbus 연결 실패</h4>
+                    <div class="trouble-solution">
+                        <strong>원인:</strong>
+                        <ul>
+                            <li>포트 502 막힘 (방화벽)</li>
+                            <li>다른 프로그램이 포트 사용 중</li>
+                            <li>Modbus 서버 미실행</li>
+                        </ul>
+                        <strong>해결:</strong>
+                        <ul>
+                            <li>방화벽에서 포트 502 허용</li>
+                            <li><code>netstat -an | findstr 502</code>로 포트 사용 확인</li>
+                            <li>UR 로봇 재부팅</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ 데이터 읽기 에러</h4>
+                    <div class="trouble-solution">
+                        <strong>원인:</strong>
+                        <ul>
+                            <li>잘못된 주소 범위</li>
+                            <li>Unit ID 불일치</li>
+                            <li>함수 코드 미지원</li>
+                        </ul>
+                        <strong>해결:</strong>
+                        <ul>
+                            <li>주소 맵 문서 확인</li>
+                            <li>Unit ID를 1로 설정</li>
+                            <li>지원하는 함수 코드 사용 (FC 04, 16)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ 하트비트 정지</h4>
+                    <div class="trouble-solution">
+                        <strong>원인:</strong>
+                        <ul>
+                            <li>통신 연결 끊김</li>
+                            <li>로봇 프로그램 정지</li>
+                            <li>네트워크 지연</li>
+                        </ul>
+                        <strong>해결:</strong>
+                        <ul>
+                            <li>네트워크 연결 상태 확인</li>
+                            <li>로봇 프로그램 실행 확인</li>
+                            <li>폴링 주기 확인 (10ms)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>9. 체크리스트</h2>
+            
+            <div class="checklist">
+                <h4>✅ 하드웨어 체크리스트</h4>
+                <ul class="check-items">
+                    <li>☐ Cat5e 이상 이더넷 케이블 준비</li>
+                    <li>☐ UR 로봇 이더넷 포트 연결</li>
+                    <li>☐ Hi-COMM Ethernet 이더넷 포트 연결</li>
+                    <li>☐ 모든 장비 전원 ON</li>
+                    <li>☐ 이더넷 LED 점등 확인 (Link, Activity)</li>
+                </ul>
+
+                <h4>✅ 네트워크 설정 체크리스트</h4>
+                <ul class="check-items">
+                    <li>☐ UR 로봇 IP: 192.168.1.7 설정</li>
+                    <li>☐ Hi-COMM IP: 192.168.1.2 확인</li>
+                    <li>☐ 서브넷 마스크: 255.255.255.0</li>
+                    <li>☐ 동일 네트워크 대역 확인</li>
+                    <li>☐ Ping 테스트 성공</li>
+                </ul>
+
+                <h4>✅ 통신 테스트 체크리스트</h4>
+                <ul class="check-items">
+                    <li>☐ Telnet 포트 502 연결 성공</li>
+                    <li>☐ 방화벽 포트 502 허용</li>
+                    <li>☐ Modbus 연결 테스트 성공</li>
+                    <li>☐ 로봇 모드 읽기 성공</li>
+                    <li>☐ 하트비트 신호 변화 확인</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <div class="notice info">
+                <div class="notice-icon">ℹ️</div>
+                <div class="notice-content">
+                    <h4>다음: 예제 코드</h4>
+                    <p>연결이 완료되었다면, 실제 통신 예제 코드를 확인하세요.</p>
+                    <a href="examples.html" class="btn-primary">예제 코드 보기 →</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

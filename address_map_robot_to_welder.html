@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로봇→용접기 주소 맵 - Shipyard Welding</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">⚓</div>
+            <h2>Shipyard Welding</h2>
+            <p>Modbus TCP Manual</p>
+        </div>
+        <ul class="menu">
+            <li><a href="index.html">홈</a></li>
+            <li><a href="overview.html">시스템 개요</a></li>
+            <li><a href="protocol_spec.html">통신 프로토콜 사양</a></li>
+            <li class="menu-section">주소 맵</li>
+            <li><a href="address_map_robot_to_pendant.html">로봇 → 펜던트</a></li>
+            <li><a href="address_map_pendant_to_robot.html">펜던트 → 로봇</a></li>
+            <li><a href="address_map_robot_to_welder.html" class="active">로봇 → 용접기</a></li>
+            <li><a href="address_map_welder_to_robot.html">용접기 → 로봇</a></li>
+            <li><a href="ur_robot_data.html">UR 로봇 데이터</a></li>
+            <li class="menu-section">참고 자료</li>
+            <li><a href="connection_guide.html">연결 가이드</a></li>
+            <li><a href="examples.html">예제 코드</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Version 1.0</p>
+            <p>Last Updated: 2024</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <div class="direction-badge robot-to-welder">
+                <span class="badge-icon">🤖 → ⚡</span>
+                <div>
+                    <h1>로봇 → 용접기 주소 맵</h1>
+                    <p class="subtitle">UR 로봇에서 Hi-COMM Ethernet으로 전송하는 용접 제어 명령</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="address-info">
+            <div class="info-row">
+                <div class="info-item">
+                    <strong>주소 범위:</strong>
+                    <span class="value">200 ~ 209</span>
+                </div>
+                <div class="info-item">
+                    <strong>레지스터 수:</strong>
+                    <span class="value">10개</span>
+                </div>
+                <div class="info-item">
+                    <strong>통신 방향:</strong>
+                    <span class="badge rw">Master Read</span>
+                </div>
+                <div class="info-item">
+                    <strong>함수 코드:</strong>
+                    <span class="value">FC 04 (Read Input Registers)</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>통신 개요</h2>
+            <div class="protocol-info">
+                <p><strong>통신 흐름:</strong> UR 로봇(Slave) ← Hi-COMM Ethernet(Master)</p>
+                <p><strong>주소 시작:</strong> Modbus TCP Register Address 200</p>
+                <p><strong>함수 코드:</strong> 04 (Read Input Registers)</p>
+                <p><strong>폴링 주기:</strong> 10ms (100Hz)</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 201: 로봇 사용 가능 여부</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>신호명</th>
+                            <th>비트</th>
+                            <th>값</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><code>201</code></td>
+                            <td rowspan="2"><strong>로봇 사용</strong></td>
+                            <td>Bit 0</td>
+                            <td>0: 사용 불가<br>1: 사용 가능</td>
+                            <td>로봇에서 용접기 사용 가능 상태</td>
+                        </tr>
+                        <tr>
+                            <td>Bit 1~15</td>
+                            <td>Reserved</td>
+                            <td>향후 확장용</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 202: 용접기 제어 (비트 필드)</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>비트</th>
+                            <th>신호명</th>
+                            <th>값</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="9"><code>202</code></td>
+                            <td><strong>Bit 0</strong></td>
+                            <td><strong>토치 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>용접 토치 ON/OFF 제어</td>
+                        </tr>
+                        <tr>
+                            <td>Bit 1~3</td>
+                            <td>Reserved</td>
+                            <td>-</td>
+                            <td>향후 확장용</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 4</strong></td>
+                            <td><strong>가스체크 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>보호가스 체크 명령</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 5</strong></td>
+                            <td><strong>스틱체크 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>스틱아웃 체크 명령</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 6</strong></td>
+                            <td><strong>토치 충돌 검출 상태</strong></td>
+                            <td>0: 미검출<br>1: 검출</td>
+                            <td>로봇이 감지한 토치 충돌 상태</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 7</strong></td>
+                            <td><strong>로봇 오류 상태</strong></td>
+                            <td>0: 정상<br>1: 오류</td>
+                            <td>로봇 시스템 오류 발생</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 8</strong></td>
+                            <td><strong>토치 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>용접 토치 제어 (상위 바이트)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 13</strong></td>
+                            <td><strong>정인칭 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>정인칭(Forward) 와이어 송급</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 14</strong></td>
+                            <td><strong>역인칭 동작 명령</strong></td>
+                            <td>0: OFF<br>1: ON</td>
+                            <td>역인칭(Reverse) 와이어 송급</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bit-diagram">
+                <h4>비트 구조 다이어그램</h4>
+                <pre class="bit-field"><code>Bit 15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0
+      └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+        |   역  정  |   |   |   |  토치 |로봇 |토치 |스틱 |가스 |   |   |   |토치|
+        |   인  인  |   |   |   | (상위)|오류 |충돌 |체크 |체크 |   |   |   | ON |
+        |   칭  칭  |   |   |   |      |     |     |     |     |   |   |   |    |
+        └───────────────────────────────────────────────────────────────────────┘
+         Bit 14~15: 와이어 송급 제어
+         Bit 8: 토치 제어 (상위)
+         Bit 7: 로봇 오류
+         Bit 6: 토치 충돌 검출
+         Bit 5: 스틱체크
+         Bit 4: 가스체크
+         Bit 0: 토치 ON/OFF</code></pre>
+            </div>
+
+            <div class="notice warning">
+                <div class="notice-icon">⚠️</div>
+                <div class="notice-content">
+                    <h4>안전 정지 시 동작</h4>
+                    <p>로봇이 <strong>보안 정지(ADDR 261)</strong>, <strong>비상 정지(ADDR 262)</strong>, <strong>안전 정지(ADDR 265)</strong> 상태일 경우:</p>
+                    <ul>
+                        <li>토치 동작 명령 (Bit 0, 8) → 강제 OFF</li>
+                        <li>정인칭 명령 (Bit 13) → 강제 OFF</li>
+                        <li>역인칭 명령 (Bit 14) → 강제 OFF</li>
+                        <li>가스체크 명령 (Bit 4) → 강제 OFF</li>
+                        <li>스틱체크 명령 (Bit 5) → 강제 OFF</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 203: 용접 와이어 및 모드 설정 (비트 필드)</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>비트</th>
+                            <th>신호명</th>
+                            <th>값</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="5"><code>203</code></td>
+                            <td><strong>Bit 0~1</strong></td>
+                            <td><strong>보호가스 설정</strong></td>
+                            <td>
+                                00: CO2 100%<br>
+                                01: Ar 80% + CO2 20%<br>
+                                10: Ar 98% + O2 2%<br>
+                                11: Ar 100%
+                            </td>
+                            <td>용접 보호가스 종류</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 2~3</strong></td>
+                            <td><strong>용접 시퀀스 모드</strong></td>
+                            <td>
+                                00: LSM (저스패터 단락)<br>
+                                01: DCM (일반 단락)<br>
+                                10: DPM (더블 펄스)<br>
+                                11: PM (펄스)
+                            </td>
+                            <td>용접 모드 선택</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 4~6</strong></td>
+                            <td><strong>와이어 직경 설정</strong></td>
+                            <td>
+                                000: 0.8mm<br>
+                                001: 0.9mm<br>
+                                010: 1.0mm<br>
+                                011: 1.2mm<br>
+                                100: 1.4mm<br>
+                                101: 1.6mm
+                            </td>
+                            <td>용접 와이어 직경</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 7~9</strong></td>
+                            <td><strong>와이어 재질 설정</strong></td>
+                            <td>
+                                000: FE-Solid<br>
+                                001: FE-Cored<br>
+                                010: STS-Solid<br>
+                                011: STS-Cored<br>
+                                100: AL-Soft<br>
+                                101: AL-Hard<br>
+                                110: CuSi<br>
+                                111: CuMg
+                            </td>
+                            <td>용접 와이어 재질</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bit 10</strong></td>
+                            <td><strong>전압 설정 방식</strong></td>
+                            <td>
+                                0: 전류/전압 개별 설정<br>
+                                1: 전류/전압 시너직 설정
+                            </td>
+                            <td>용접 전압 제어 방식</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-example">
+                <h4>예제: 설정값 읽기</h4>
+                <pre><code>// ADDR 203 레지스터 값: 0b0000010011000001 (0x0CC1)
+value = modbus_read(address=203)
+
+// 비트 추출
+gas_type = value & 0x03           // Bit 0~1: 01 = Ar 80% + CO2 20%
+weld_mode = (value >> 2) & 0x03   // Bit 2~3: 00 = LSM
+wire_dia = (value >> 4) & 0x07    // Bit 4~6: 011 = 1.2mm
+wire_mat = (value >> 7) & 0x07    // Bit 7~9: 000 = FE-Solid
+voltage_mode = (value >> 10) & 0x01 // Bit 10: 0 = 개별 설정</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 204~205: 용접 출력 설정</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>신호명</th>
+                            <th>데이터 타입</th>
+                            <th>범위</th>
+                            <th>단위</th>
+                            <th>스케일</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>204</code></td>
+                            <td><strong>전류 설정</strong></td>
+                            <td>UINT16</td>
+                            <td>30 ~ 400</td>
+                            <td>A</td>
+                            <td>× 1A</td>
+                            <td>본 용접 출력 전류 설정값<br>예: 150 = 150A</td>
+                        </tr>
+                        <tr>
+                            <td><code>205</code></td>
+                            <td><strong>전압 설정</strong></td>
+                            <td>UINT16</td>
+                            <td>100 ~ 400</td>
+                            <td>V</td>
+                            <td>× 0.1V</td>
+                            <td>본 용접 출력 전압 설정값<br>예: 255 = 25.5V</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 206: 전압 시너직 보정</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>신호명</th>
+                            <th>데이터 타입</th>
+                            <th>범위</th>
+                            <th>표현</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>206</code></td>
+                            <td><strong>전압 시너직 보정</strong></td>
+                            <td>UINT16</td>
+                            <td>0 ~ 100</td>
+                            <td>-5.0 ~ +5.0</td>
+                            <td>
+                                시너직 전압 보정값<br>
+                                중심값: 50<br>
+                                예: 70 = (70-50) × 0.1 = +2.0
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-example">
+                <h4>예제: 시너직 보정 계산</h4>
+                <pre><code>// 레지스터 값에서 실제 보정값 계산
+reg_value = modbus_read(address=206)  // 예: 65
+
+center = 50
+scale = 0.1
+correction = (reg_value - center) * scale
+
+print(f"보정값: {correction:+.1f}")  // +1.5
+
+// 실제 보정값에서 레지스터 값 계산
+correction = 2.5  // +2.5V 보정
+reg_value = int((correction / scale) + center)  // 75
+
+modbus_write(address=206, value=reg_value)</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>ADDR 207~210: 작업 정보</h2>
+            <div class="table-wrapper">
+                <table class="address-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>신호명</th>
+                            <th>데이터 타입</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>207</code></td>
+                            <td><strong>호선 번호</strong></td>
+                            <td>UINT16</td>
+                            <td>조선소 호선(선박) 번호</td>
+                        </tr>
+                        <tr>
+                            <td><code>208</code></td>
+                            <td><strong>블록 번호</strong></td>
+                            <td>UINT16</td>
+                            <td>블록 식별 번호</td>
+                        </tr>
+                        <tr>
+                            <td><code>209</code></td>
+                            <td><strong>단위블록 (문자)</strong></td>
+                            <td>UINT16</td>
+                            <td>단위 블록 문자 코드</td>
+                        </tr>
+                        <tr>
+                            <td><code>210</code></td>
+                            <td><strong>단위블록 (숫자)</strong></td>
+                            <td>UINT16</td>
+                            <td>단위 블록 숫자 코드</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-box">
+                <h4>📝 작업 정보 사용 목적</h4>
+                <p>호선/블록/단위블록 정보는 용접 작업의 추적성(Traceability)을 위해 사용됩니다:</p>
+                <ul>
+                    <li>용접 데이터 로깅 및 품질 관리</li>
+                    <li>작업 이력 추적</li>
+                    <li>생산 관리 시스템 연동</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>전체 주소 맵 요약</h2>
+            <div class="table-wrapper">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>주소</th>
+                            <th>신호명</th>
+                            <th>데이터 형식</th>
+                            <th>주요 내용</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>201</code></td>
+                            <td>로봇 사용</td>
+                            <td>비트</td>
+                            <td>로봇 사용 가능 여부</td>
+                        </tr>
+                        <tr>
+                            <td><code>202</code></td>
+                            <td>용접기 제어</td>
+                            <td>비트 필드</td>
+                            <td>토치, 정/역인칭, 가스/스틱체크</td>
+                        </tr>
+                        <tr>
+                            <td><code>203</code></td>
+                            <td>와이어/모드 설정</td>
+                            <td>비트 필드</td>
+                            <td>와이어 재질/직경, 용접 모드</td>
+                        </tr>
+                        <tr>
+                            <td><code>204</code></td>
+                            <td>전류 설정</td>
+                            <td>UINT16</td>
+                            <td>30~400A</td>
+                        </tr>
+                        <tr>
+                            <td><code>205</code></td>
+                            <td>전압 설정</td>
+                            <td>UINT16</td>
+                            <td>10.0~40.0V</td>
+                        </tr>
+                        <tr>
+                            <td><code>206</code></td>
+                            <td>시너직 보정</td>
+                            <td>UINT16</td>
+                            <td>-5.0~+5.0</td>
+                        </tr>
+                        <tr>
+                            <td><code>207~210</code></td>
+                            <td>작업 정보</td>
+                            <td>UINT16</td>
+                            <td>호선/블록 번호</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <div class="code-example">
+                <h3>Python 전체 읽기 예제</h3>
+                <pre><code>from pymodbus.client import ModbusTcpClient
+
+client = ModbusTcpClient('192.168.1.7', port=502)
+client.connect()
+
+# 로봇 → 용접기 데이터 읽기 (ADDR 200~209)
+result = client.read_input_registers(address=200, count=10, unit=1)
+
+if not result.isError():
+    robot_ready = result.registers[1] & 0x01  # ADDR 201 Bit 0
+    
+    # ADDR 202 제어 비트 추출
+    control = result.registers[2]
+    torch_on = control & 0x01
+    gas_check = (control >> 4) & 0x01
+    stick_check = (control >> 5) & 0x01
+    torch_collision = (control >> 6) & 0x01
+    robot_error = (control >> 7) & 0x01
+    forward_feed = (control >> 13) & 0x01
+    reverse_feed = (control >> 14) & 0x01
+    
+    # ADDR 204~205 용접 조건
+    current_set = result.registers[4]  # A
+    voltage_set = result.registers[5] * 0.1  # V
+    
+    # ADDR 207~210 작업 정보
+    ship_no = result.registers[7]
+    block_no = result.registers[8]
+    
+    print(f"로봇 준비: {'OK' if robot_ready else 'Not Ready'}")
+    print(f"토치 상태: {'ON' if torch_on else 'OFF'}")
+    print(f"충돌 감지: {'Yes' if torch_collision else 'No'}")
+    print(f"설정 전류: {current_set}A")
+    print(f"설정 전압: {voltage_set}V")
+    print(f"호선 번호: {ship_no}")
+
+client.close()</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <div class="notice info">
+                <div class="notice-icon">ℹ️</div>
+                <div class="notice-content">
+                    <h4>다음: 용접기 → 로봇 주소 맵</h4>
+                    <p>용접기에서 로봇으로 전송하는 피드백 데이터를 확인하세요.</p>
+                    <a href="address_map_welder_to_robot.html" class="btn-primary">용접기→로봇 주소 맵 보기 →</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

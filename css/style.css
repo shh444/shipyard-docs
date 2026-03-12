@@ -1,0 +1,1687 @@
+/* ==========================================================================
+   Shipyard Welding Modbus TCP Manual - Stylesheet
+   ========================================================================== */
+
+/* 기본 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 색상 팔레트 */
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --info-color: #3498db;
+    
+    /* 배경색 */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-dark: #2c3e50;
+    --bg-code: #f4f4f4;
+    
+    /* 텍스트 색상 */
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --text-light: #ecf0f1;
+    
+    /* 경계선 */
+    --border-color: #e1e8ed;
+    --border-radius: 8px;
+    
+    /* 그림자 */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
+    
+    /* 사이드바 너비 */
+    --sidebar-width: 280px;
+}
+
+/* 기본 타이포그래피 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+                 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 
+                 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   사이드바 (Sidebar)
+   ========================================================================== */
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-dark);
+    color: var(--text-light);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* 로고 */
+.logo {
+    padding: 2rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+}
+
+.logo-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #fff;
+}
+
+.logo p {
+    font-size: 0.85rem;
+    color: #95a5a6;
+    font-weight: 300;
+}
+
+/* 메뉴 */
+.menu {
+    list-style: none;
+    padding: 0.5rem 0;
+}
+
+.menu li {
+    margin: 0;
+}
+
+.menu a {
+    display: block;
+    padding: 0.85rem 1.5rem;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+}
+
+.menu a:hover {
+    background: rgba(255,255,255,0.1);
+    border-left-color: var(--secondary-color);
+    padding-left: 1.8rem;
+}
+
+.menu a.active {
+    background: rgba(52, 152, 219, 0.2);
+    border-left-color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.menu-section {
+    padding: 1rem 1.5rem 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #95a5a6;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* 사이드바 푸터 */
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    font-size: 0.8rem;
+    color: #95a5a6;
+    margin-top: auto;
+}
+
+.sidebar-footer p {
+    margin: 0.3rem 0;
+}
+
+/* ==========================================================================
+   메인 컨텐츠 영역
+   ========================================================================== */
+
+.content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 2.5rem 3rem;
+    min-height: 100vh;
+    background: var(--bg-secondary);
+}
+
+/* 페이지 헤더 */
+.page-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.page-header .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* 방향 배지 */
+.direction-badge {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.badge-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.robot-to-pendant .badge-icon { color: #3498db; }
+.pendant-to-robot .badge-icon { color: #9b59b6; }
+.robot-to-welder .badge-icon { color: #e67e22; }
+.welder-to-robot .badge-icon { color: #e74c3c; }
+.ur-system .badge-icon { color: #16a085; }
+
+/* 헤더 컨텐츠 */
+.header-content h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   섹션
+   ========================================================================== */
+
+section {
+    background: var(--bg-primary);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+section h2 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--secondary-color);
+    font-weight: 600;
+}
+
+section h3 {
+    font-size: 1.4rem;
+    color: #34495e;
+    margin: 2rem 0 1rem;
+    font-weight: 600;
+}
+
+section h4 {
+    font-size: 1.15rem;
+    color: var(--primary-color);
+    margin: 1.5rem 0 0.75rem;
+    font-weight: 600;
+}
+
+section p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    color: #555;
+}
+
+section ul, section ol {
+    margin: 1rem 0 1rem 2rem;
+    line-height: 1.8;
+}
+
+section li {
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+/* ==========================================================================
+   카드 레이아웃
+   ========================================================================== */
+
+.card-grid, .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.card, .info-card {
+    background: var(--bg-primary);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.card:hover, .info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-icon, .info-card .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.card h3, .info-card h3 {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    border: none;
+    padding: 0;
+}
+
+.card p, .info-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.card-link, .card a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.card-link:hover, .card a:hover {
+    color: #2980b9;
+}
+
+/* 인트로 카드 */
+.intro-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.intro-card.primary {
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+}
+
+.intro-card h2 {
+    color: white;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.intro-card p, .intro-card ul {
+    color: rgba(255,255,255,0.95);
+}
+
+.intro-card ul {
+    margin-left: 1.5rem;
+}
+
+/* ==========================================================================
+   테이블
+   ========================================================================== */
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.95rem;
+}
+
+thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+thead th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+tbody tr:hover {
+    background: #f8f9fa;
+}
+
+tbody tr.highlight {
+    background: #e3f2fd;
+}
+
+tbody tr.highlight:hover {
+    background: #bbdefb;
+}
+
+tbody tr.error-row {
+    background: #ffebee;
+}
+
+tbody tr.error-row:hover {
+    background: #ffcdd2;
+}
+
+tbody td {
+    padding: 1rem;
+    color: #555;
+}
+
+tbody td strong {
+    color: var(--primary-color);
+}
+
+tbody td code {
+    background: #f4f4f4;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #e74c3c;
+    font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* 주소 테이블 */
+.address-table {
+    font-size: 0.9rem;
+}
+
+.address-table thead {
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+}
+
+.address-table tbody td:first-child {
+    font-weight: 600;
+    color: #e74c3c;
+}
+
+/* 요약 테이블 */
+.summary-table thead {
+    background: linear-gradient(135deg, #16a085 0%, #27ae60 100%);
+}
+
+/* 스펙 테이블 */
+.spec-table {
+    font-size: 0.9rem;
+}
+
+.spec-table tbody tr td:first-child {
+    font-weight: 600;
+    color: var(--primary-color);
+    width: 200px;
+}
+
+/* ==========================================================================
+   배지 (Badges)
+   ========================================================================== */
+
+.badge {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.ro {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge.rw {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge.used {
+    background: #c8e6c9;
+    color: #2e7d32;
+}
+
+.badge.slave {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.badge.master {
+    background: #e1f5fe;
+    color: #01579b;
+}
+
+/* ==========================================================================
+   정보 박스
+   ========================================================================== */
+
+.info-box, .notice {
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: var(--border-radius);
+    border-left: 4px solid;
+    display: flex;
+    gap: 1rem;
+}
+
+.info-box.tip {
+    background: #e8f5e9;
+    border-left-color: #4caf50;
+}
+
+.info-box.warning, .notice.warning {
+    background: #fff3e0;
+    border-left-color: #ff9800;
+}
+
+.info-box.info, .notice.info {
+    background: #e3f2fd;
+    border-left-color: #2196f3;
+}
+
+.notice-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.notice-content {
+    flex: 1;
+}
+
+.notice h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.notice p {
+    margin-bottom: 0.75rem;
+}
+
+.notice ul {
+    margin-left: 1.5rem;
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   코드 블록
+   ========================================================================== */
+
+.code-example {
+    margin: 2rem 0;
+}
+
+.code-example h3, .code-example h4 {
+    margin-bottom: 1rem;
+}
+
+pre {
+    background: var(--bg-code);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-left: 4px solid var(--secondary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+pre code {
+    font-family: 'Monaco', 'Courier New', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #2c3e50;
+    background: none;
+    padding: 0;
+}
+
+code {
+    background: #f4f4f4;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #e74c3c;
+    font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* 비트 필드 다이어그램 */
+.bit-diagram, .bit-field {
+    background: #263238;
+    color: #aed581;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.diagram {
+    background: #263238;
+    color: #64b5f6;
+    font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   주소 정보 섹션
+   ========================================================================== */
+
+.address-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    text-align: center;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.info-item .value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   요약 카드
+   ========================================================================== */
+
+.address-summary, .address-map-overview {
+    margin: 2rem 0;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.summary-item, .address-range-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--secondary-color);
+    transition: all 0.3s;
+}
+
+.summary-item:hover, .address-range-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-item.highlight {
+    border-left-color: #f39c12;
+    background: #fffbf0;
+}
+
+.summary-header, .range-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-icon, .range-icon {
+    font-size: 1.5rem;
+}
+
+.summary-header h4, .range-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.address-range {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.summary-content p, .range-body p {
+    margin-bottom: 0.5rem;
+}
+
+.summary-content ul, .range-body ul {
+    margin-left: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   시스템 컴포넌트
+   ========================================================================== */
+
+.system-components {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.component-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.component-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.component-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.component-card h3 {
+    margin: 0 0 1rem 0;
+    padding: 0;
+    border: none;
+}
+
+.component-card ul {
+    text-align: left;
+    margin-left: 1.5rem;
+}
+
+/* ==========================================================================
+   아키텍처 다이어그램
+   ========================================================================== */
+
+.architecture-diagram, .connection-diagram, .timing-diagram {
+    background: #263238;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.architecture-diagram pre, .connection-diagram pre, .timing-diagram pre {
+    background: transparent;
+    color: #64b5f6;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   주소 블록
+   ========================================================================== */
+
+.address-structure {
+    margin: 2rem 0;
+}
+
+.address-block {
+    margin-bottom: 2rem;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.address-header {
+    padding: 1rem 1.5rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.address-header.robot-to-pendant {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.address-header.pendant-to-robot {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.address-header.robot-to-welder {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.address-header.welder-to-robot {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.address-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.address-range {
+    background: rgba(255,255,255,0.2);
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.address-table.compact {
+    font-size: 0.85rem;
+}
+
+.address-table.compact td, .address-table.compact th {
+    padding: 0.7rem;
+}
+
+/* ==========================================================================
+   단계 리스트
+   ========================================================================== */
+
+.step-list {
+    margin: 2rem 0;
+}
+
+.step {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+}
+
+.step:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.step.error {
+    border-left: 4px solid #e74c3c;
+    background: #ffebee;
+}
+
+.step-num, .step-number {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h3, .step-content h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+}
+
+.step-content p {
+    margin-bottom: 0.75rem;
+}
+
+.step-content ul {
+    margin-left: 1.5rem;
+}
+
+/* ==========================================================================
+   프로토콜 정보
+   ========================================================================== */
+
+.protocol-info, .protocol-box {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--secondary-color);
+    margin: 1.5rem 0;
+}
+
+.protocol-frame {
+    background: #263238;
+    color: #aed581;
+}
+
+/* ==========================================================================
+   기능 카드
+   ========================================================================== */
+
+.function-codes, .scaling-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.function-card, .scale-item {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+}
+
+.function-card:hover, .scale-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.function-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.function-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.fc-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.function-body {
+    padding: 1.5rem;
+}
+
+.scale-item {
+    padding: 1.5rem;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.scale-item h4 {
+    margin-top: 0;
+}
+
+/* ==========================================================================
+   설정 박스
+   ========================================================================== */
+
+.config-box, .spec-box {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+}
+
+.config-item, .param-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.config-item:last-child, .param-item:last-child {
+    border-bottom: none;
+}
+
+.config-label, .param-item strong {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.config-value {
+    font-family: 'Monaco', 'Courier New', monospace;
+    color: #e74c3c;
+}
+
+/* ==========================================================================
+   스펙 그리드
+   ========================================================================== */
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.spec-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.spec-card h3 {
+    margin-top: 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+/* ==========================================================================
+   장비 리스트
+   ========================================================================== */
+
+.equipment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.equipment-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    gap: 1rem;
+}
+
+.equipment-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.equipment-info h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   타이밍 스펙
+   ========================================================================== */
+
+.timing-specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.timing-item {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.timing-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.timing-item span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+/* ==========================================================================
+   에러 처리
+   ========================================================================== */
+
+.error-table table thead {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.error-codes {
+    margin: 1.5rem 0;
+}
+
+.error-codes h4 {
+    color: #e74c3c;
+    margin-bottom: 1rem;
+}
+
+.error-codes ul {
+    background: #ffebee;
+    padding: 1rem 1rem 1rem 2.5rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid #e74c3c;
+}
+
+.error-procedure {
+    margin: 1.5rem 0;
+}
+
+.procedure-step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   안전 기능
+   ========================================================================== */
+
+.safety-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.safety-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    border-top: 4px solid #e74c3c;
+}
+
+.safety-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.safety-card h4 {
+    margin-bottom: 1rem;
+    color: #e74c3c;
+}
+
+/* ==========================================================================
+   링크 카드
+   ========================================================================== */
+
+.link-cards, .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.link-card, .quick-link {
+    display: block;
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: all 0.3s;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.link-card:hover, .quick-link:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.link-card h4 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.link-card p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.quick-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.link-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.link-text {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   버튼
+   ========================================================================== */
+
+.btn-primary, .btn-secondary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-secondary {
+    background: #ecf0f1;
+    color: var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background: #bdc3c7;
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* 필터 버튼 */
+.filter-section {
+    margin: 1.5rem 0;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.filter-btn:hover {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.filter-btn.active {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+/* ==========================================================================
+   트러블슈팅
+   ========================================================================== */
+
+.troubleshooting {
+    margin: 2rem 0;
+}
+
+.trouble-item {
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid #f39c12;
+}
+
+.trouble-item h4 {
+    color: #e67e22;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.trouble-solution {
+    margin-top: 1rem;
+}
+
+.trouble-solution strong {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   체크리스트
+   ========================================================================== */
+
+.checklist {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin: 2rem 0;
+}
+
+.checklist h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.check-items {
+    list-style: none;
+    margin-left: 0;
+}
+
+.check-items li {
+    padding: 0.5rem 0;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.check-items li::before {
+    content: '☐';
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+}
+
+/* ==========================================================================
+   파라미터 리스트
+   ========================================================================== */
+
+.param-list {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+}
+
+.param-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.param-item:last-child {
+    border-bottom: none;
+}
+
+/* ==========================================================================
+   기능 리스트
+   ========================================================================== */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.feature-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-item h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   도구 리스트
+   ========================================================================== */
+
+.tool-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.tool-item {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.tool-item h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.tool-item p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.tool-item code {
+    display: block;
+    margin-top: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+}
+
+/* ==========================================================================
+   설정 단계
+   ========================================================================== */
+
+.config-steps {
+    margin: 1.5rem 0;
+}
+
+.config-step {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.config-step strong {
+    color: var(--secondary-color);
+    margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   방화벽 설정
+   ========================================================================== */
+
+.firewall-config {
+    margin: 1.5rem 0;
+}
+
+.firewall-config h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.firewall-config ol {
+    background: #f8f9fa;
+    padding: 1rem 1rem 1rem 2.5rem;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+}
+
+/* ==========================================================================
+   테스트 절차
+   ========================================================================== */
+
+.test-procedure {
+    margin: 1.5rem 0;
+}
+
+.test-procedure h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   하이라이트 박스
+   ========================================================================== */
+
+.highlight-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+}
+
+.highlight-box h3, .highlight-box h4 {
+    color: white;
+    margin-top: 0;
+}
+
+.highlight-box ul {
+    margin-left: 1.5rem;
+}
+
+/* ==========================================================================
+   데이터 형식 박스
+   ========================================================================== */
+
+.data-format-box {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.data-format-box h4 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   반응형 디자인
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .content {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 250px;
+    }
+    
+    .content {
+        margin-left: 250px;
+    }
+    
+    :root {
+        --sidebar-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+    }
+    
+    .content {
+        margin-left: 0;
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .card-grid, .cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .direction-badge {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    tbody td, thead th {
+        padding: 0.5rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    section {
+        padding: 1.5rem;
+    }
+    
+    section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .step {
+        flex-direction: column;
+    }
+    
+    .step-num {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* ==========================================================================
+   프린트 스타일
+   ========================================================================== */
+
+@media print {
+    .sidebar {
+        display: none;
+    }
+    
+    .content {
+        margin-left: 0;
+        padding: 0;
+    }
+    
+    section {
+        page-break-inside: avoid;
+        box-shadow: none;
+    }
+    
+    .notice, .info-box {
+        border: 1px solid #ddd;
+    }
+    
+    a {
+        text-decoration: none;
+        color: #000;
+    }
+}
+
+/* ==========================================================================
+   애니메이션
+   ========================================================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+section {
+    animation: fadeIn 0.6s ease-out;
+}

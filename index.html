@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조선소 용접 시스템 Modbus TCP 매뉴얼</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">⚓</div>
+            <h2>Shipyard Welding</h2>
+            <p>Modbus TCP Manual</p>
+        </div>
+        <ul class="menu">
+            <li><a href="index.html" class="active">홈</a></li>
+            <li><a href="overview.html">시스템 개요</a></li>
+            <li><a href="protocol_spec.html">통신 프로토콜 사양</a></li>
+            <li class="menu-section">주소 맵</li>
+            <li><a href="address_map_robot_to_pendant.html">로봇 → 펜던트</a></li>
+            <li><a href="address_map_pendant_to_robot.html">펜던트 → 로봇</a></li>
+            <li><a href="address_map_robot_to_welder.html">로봇 → 용접기</a></li>
+            <li><a href="address_map_welder_to_robot.html">용접기 → 로봇</a></li>
+            <li><a href="ur_robot_data.html">UR 로봇 데이터</a></li>
+            <li class="menu-section">참고 자료</li>
+            <li><a href="connection_guide.html">연결 가이드</a></li>
+            <li><a href="examples.html">예제 코드</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Version 1.0</p>
+            <p>Last Updated: 2024</p>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="page-header">
+            <div class="header-content">
+                <h1>조선소 용접 시스템<br>Modbus TCP 통신 매뉴얼</h1>
+                <p class="subtitle">UR Cobot / 펜던트 / 용접기 통신 프로토콜</p>
+            </div>
+        </header>
+
+        <section class="intro-section">
+            <div class="intro-card primary">
+                <h2>📘 문서 개요</h2>
+                <p>본 문서는 조선소 용접 자동화 시스템의 <strong>Modbus TCP 통신 프로토콜</strong>을 정의합니다.</p>
+                <ul>
+                    <li>UR 협동로봇 (Universal Robot)</li>
+                    <li>용접 제어 펜던트</li>
+                    <li>용접기 제어 시스템</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="card-grid">
+            <div class="info-card">
+                <div class="card-icon">🔧</div>
+                <h3>시스템 개요</h3>
+                <p>용접 시스템 구성 및 통신 구조</p>
+                <a href="overview.html" class="card-link">바로가기 →</a>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">📡</div>
+                <h3>통신 프로토콜</h3>
+                <p>Modbus TCP 인터페이스 사양</p>
+                <a href="protocol_spec.html" class="card-link">바로가기 →</a>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">📊</div>
+                <h3>주소 맵</h3>
+                <p>전체 신호 주소 맵핑 테이블</p>
+                <a href="address_map_robot_to_pendant.html" class="card-link">바로가기 →</a>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🤖</div>
+                <h3>UR 로봇 데이터</h3>
+                <p>UR 로봇 상태 및 조인트 정보</p>
+                <a href="ur_robot_data.html" class="card-link">바로가기 →</a>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🔌</div>
+                <h3>연결 가이드</h3>
+                <p>하드웨어 연결 및 설정 방법</p>
+                <a href="connection_guide.html" class="card-link">바로가기 →</a>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💻</div>
+                <h3>예제 코드</h3>
+                <p>Python/C# 통신 구현 예제</p>
+                <a href="examples.html" class="card-link">바로가기 →</a>
+            </div>
+        </section>
+
+        <section class="address-summary">
+            <h2>주소 맵 요약</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-header">
+                        <span class="summary-icon">🤖→📱</span>
+                        <h4>로봇 → 펜던트</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>주소 범위:</strong> 128 ~ 160</p>
+                        <p><strong>주요 신호:</strong> 하트비트, 용접상태, 전류/전압, PATH 정보</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-header">
+                        <span class="summary-icon">📱→🤖</span>
+                        <h4>펜던트 → 로봇</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>주소 범위:</strong> 161 ~ 255</p>
+                        <p><strong>주요 신호:</strong> 작업모드, 용접조건, 치수정보, 파라미터</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-header">
+                        <span class="summary-icon">🤖→⚡</span>
+                        <h4>로봇 → 용접기</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>주소 범위:</strong> 201 ~ 210</p>
+                        <p><strong>주요 신호:</strong> 용접기 제어, 전류/전압 설정, 호선/블록 정보</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-header">
+                        <span class="summary-icon">⚡→🤖</span>
+                        <h4>용접기 → 로봇</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>주소 범위:</strong> 211 ~ 223</p>
+                        <p><strong>주요 신호:</strong> 전류/전압 피드백, 송급장치 상태, 오류코드</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-header">
+                        <span class="summary-icon">🤖📡</span>
+                        <h4>UR 로봇 시스템</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>주소 범위:</strong> 0~1, 256~405</p>
+                        <p><strong>주요 신호:</strong> I/O, 로봇모드, 조인트 각도/속도/전류, TCP 위치</p>
+                    </div>
+                </div>
+
+                <div class="summary-item highlight">
+                    <div class="summary-header">
+                        <span class="summary-icon">📋</span>
+                        <h4>통신 사양</h4>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>프로토콜:</strong> Modbus TCP</p>
+                        <p><strong>포트:</strong> 502</p>
+                        <p><strong>데이터:</strong> Holding Registers (16-bit)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-links">
+            <h2>빠른 접근</h2>
+            <div class="link-grid">
+                <a href="protocol_spec.html#network-config" class="quick-link">
+                    <span class="link-icon">🌐</span>
+                    <span class="link-text">네트워크 설정</span>
+                </a>
+                <a href="address_map_robot_to_pendant.html#heartbeat" class="quick-link">
+                    <span class="link-icon">💓</span>
+                    <span class="link-text">하트비트 신호</span>
+                </a>
+                <a href="address_map_pendant_to_robot.html#welding-params" class="quick-link">
+                    <span class="link-icon">⚙️</span>
+                    <span class="link-text">용접 파라미터</span>
+                </a>
+                <a href="ur_robot_data.html#joint-data" class="quick-link">
+                    <span class="link-icon">🔧</span>
+                    <span class="link-text">조인트 데이터</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="notice-section">
+            <div class="notice warning">
+                <div class="notice-icon">⚠️</div>
+                <div class="notice-content">
+                    <h4>안전 주의사항</h4>
+                    <ul>
+                        <li>용접 작업 중에는 반드시 안전 장비를 착용하세요</li>
+                        <li>비상정지 버튼의 위치를 항상 확인하세요</li>
+                        <li>로봇 작동 영역 내 출입을 제한하세요</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="notice info">
+                <div class="notice-icon">ℹ️</div>
+                <div class="notice-content">
+                    <h4>문서 정보</h4>
+                    <p>본 문서는 조선소 용접 자동화 시스템의 통신 프로토콜을 정의합니다.</p>
+                    <p>문의사항은 기술지원팀으로 연락주시기 바랍니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
