@@ -1,29 +1,39 @@
-# Shipyard Welding Modbus TCP Documentation
+# shipyard-docs
 
-조선소 용접 시스템 Modbus TCP 통신 프로토콜 문서
+용접 시스템 통신 프로토콜 통합 COMM 문서 사이트 초안입니다.
 
-## 📖 문서 개요
+## 포함 내용
+- MkDocs Material 기반 문서 사이트 골격
+- 로봇 ↔ 팬던트 ↔ 용접기 Modbus TCP 주소 문서화
+- 프로젝트 작업 시트 기준 오버라이드 반영
+- 비트필드/열거형/시퀀스/에러 코드 정리
+- GitHub Pages 배포용 Actions 워크플로
+- CSV/JSON 레지스터 카탈로그
 
-본 문서는 조선소 용접 자동화 시스템의 **Modbus TCP 통신 프로토콜**을 정의합니다.
-
-- 🤖 UR 협동로봇 (Universal Robot)
-- 📱 용접 제어 펜던트
-- ⚡ Hi-COMM Ethernet 용접기 제어 시스템
-
-## 🌐 온라인 문서
-
-**배포된 문서:** https://shh444.github.io/shipyard-docs/
-
-## 🚀 로컬에서 빌드하기
-
-### 사전 요구사항
-
-- Python 3.8 이상
-- pip
-
-### 설치
-
+## 실행 방법
 ```bash
-# 저장소 클론
-git clone https://github.com/shh444/shipyard-docs.git
-cd shipyard-docs
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+mkdocs serve
+```
+
+## 빌드
+```bash
+mkdocs build --strict
+```
+
+## 소스 우선순위
+1. 프로젝트 작업 시트(업로드된 PNG 기준)
+2. `docs/assets/reference/pendant_modbus_tcp_map.pdf`
+3. 모순 시 `docs/protocol/source-reconciliation.md`의 최종 판정
+
+## 데이터 파일
+- `docs/assets/data/modbus_register_catalog.csv`
+- `docs/assets/data/modbus_register_catalog.json`
+- `docs/assets/data/source_reconciliation.csv`
+
+## 비고
+- 초안 버전: 0.1.0
+- 생성일: 2026-03-12
+- 일부 레지스터는 현장 검증 전까지 `Reserved/TBD`로 유지했습니다.

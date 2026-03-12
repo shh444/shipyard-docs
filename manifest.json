@@ -1,0 +1,31 @@
+{
+  "version": "0.1.0",
+  "generated": "2026-03-12",
+  "files": [
+    ".github/workflows/pages.yml",
+    ".gitignore",
+    "README.md",
+    "docs/assets/data/modbus_register_catalog.csv",
+    "docs/assets/data/modbus_register_catalog.json",
+    "docs/assets/data/source_reconciliation.csv",
+    "docs/assets/reference/pendant_modbus_tcp_map.pdf",
+    "docs/assets/reference/project_bitfields_and_errors.png",
+    "docs/assets/reference/project_map_overview.png",
+    "docs/index.md",
+    "docs/protocol/bitfields-enums.md",
+    "docs/protocol/errors-alarms.md",
+    "docs/protocol/overview.md",
+    "docs/protocol/pendant-to-robot.md",
+    "docs/protocol/references.md",
+    "docs/protocol/register-map-summary.md",
+    "docs/protocol/robot-to-pendant.md",
+    "docs/protocol/sequences.md",
+    "docs/protocol/source-reconciliation.md",
+    "docs/protocol/ur-controller.md",
+    "docs/protocol/welder-interface.md",
+    "docs/protocol/welding-conditions.md",
+    "generate_site.py",
+    "mkdocs.yml",
+    "requirements.txt"
+  ]
+}

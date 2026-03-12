@@ -1,0 +1,81 @@
+address,final_name,status,pdf_alias,notes
+0,"Inputs, bit 0~15",PDF 단독,,
+1,"Outputs, bit 0~15",PDF 단독,,
+145,셀 번호,프로젝트 우선,PDF: 아크센싱 적분,작업 시트 기준 적용
+146,셀 요청,프로젝트 우선,PDF: 아크센싱 보상,작업 시트 기준 적용
+147,Reserved/TBD,미확정,,
+148,Reserved/TBD,미확정,,
+149,Reserved/TBD,PDF 단독,PDF: TEMP_ROB_WELDER,프로젝트 적용 여부 확인 필요
+150,Reserved/TBD,PDF 단독,PDF: TEMP_PEND_WELD,프로젝트 적용 여부 확인 필요
+158,전압_END,작업시트 단독,,
+159,전류_END,작업시트 단독,,
+171,선택 셀 좌,프로젝트 우선,PDF: 1~6,프로젝트 시트는 A~e(1~8) 사용
+172,선택 셀 우,프로젝트 우선,PDF: 1~6,프로젝트 시트는 A~e(1~8) 사용
+176,스칼럽 상,프로젝트 우선,,"2F=왼쪽, 3F=위"
+177,스칼럽 하,프로젝트 우선,,"2F=오른쪽, 3F=안씀"
+178,셀 선택,프로젝트 우선,PDF: 셀선택 완료?,비트 정의는 bitfields-enums.md 참조
+179,플래그 선택 (EXT_FLAG),프로젝트 우선,"PDF: 12번 비트 벽 유무, stiffner 기능 유무",작업 시트 기준 전체 비트 정의 적용
+188,곡블럭 옵션1,프로젝트 우선,PDF: 각장_3f_left / 삼호: 곡블럭,프로젝트 시트 명칭 적용
+189,곡블럭 옵션2,프로젝트 우선,PDF: 각장_3f_right / 삼호: 곡블럭,프로젝트 시트 명칭 적용
+190,중간갭_속도1,작업시트 단독,PDF: 190~199 사용하지 않음 / 190 갭-모따기,191과 짝을 이루는 보조 레지스터는 미사용/공란
+191,Reserved/TBD,미확정,,
+192,중간갭_진폭1,작업시트 단독,,
+193,Reserved/TBD,미확정,,
+194,중간갭_전류1,작업시트 단독,,
+195,Reserved/TBD,미확정,,
+196,중간갭_전압1,작업시트 단독,,
+197,Reserved/TBD,미확정,,
+198,바닥각도,작업시트 단독,,값 정의는 bitfields-enums.md 참조
+199,Reserved/TBD,미확정,,
+203,와이어 정보,프로젝트 우선,PDF: 용접 속도,작업 시트 빨간 셀(사용 안함) 표기 포함
+207,Reserved/TBD,PDF 단독,,PDF: 펜던트 호선번호
+208,Reserved/TBD,PDF 단독,,PDF: 펜던트 블록번호
+209,Reserved/TBD,PDF 단독,,PDF: 펜던트 단위블록(문자)
+210,Reserved/TBD,PDF 단독,,PDF: 펜던트 단위블록(숫자)
+211,"WCR 검출, STICK",프로젝트 우선,PDF: 용접기 하트비트 4bit=스틱아웃 / 5bit=WCR / 8bit=하트비트,"작업 시트는 bit4=STICK, bit5=WCR, PDF는 bit8 heartbeat 추가 설명"
+221,용접 파라미터2,프로젝트 우선,PDF: 용접기 to 로봇 용접 파라미터2,프로젝트 시트는 팬던트→로봇 조건 영역으로 사용
+222,용접 파라미터3,프로젝트 우선,PDF: 용접기 to 로봇 용접 파라미터3,프로젝트 시트는 팬던트→로봇 조건 영역으로 사용
+223,Reserved/TBD,PDF 단독,,PDF: 울산 중간GAP 속도
+224,Reserved/TBD,PDF 단독,,PDF: 미포 202 테스트
+256,Controller version high number,PDF 단독,,
+258,Robot Mode,PDF 단독,,
+260,isPowerOnRobot,PDF 단독,,
+261,isSecurityStopped,PDF 단독,,
+262,isEmergencyStopped,PDF 단독,,
+265,isSafetySignalSuchThatWeShouldStop,PDF 단독,,
+270,Joint 1 angle,PDF 단독,,
+271,Joint 2 angle,PDF 단독,,
+272,Joint 3 angle,PDF 단독,,
+273,Joint 4 angle,PDF 단독,,
+274,Joint 5 angle,PDF 단독,,
+275,Joint 6 angle,PDF 단독,,
+280,Joint 1 speed,PDF 단독,,
+281,Joint 2 speed,PDF 단독,,
+282,Joint 3 speed,PDF 단독,,
+283,Joint 4 speed,PDF 단독,,
+284,Joint 5 speed,PDF 단독,,
+285,Joint 6 speed,PDF 단독,,
+290,Joint 1 current,PDF 단독,,
+291,Joint 2 current,PDF 단독,,
+292,Joint 3 current,PDF 단독,,
+293,Joint 4 current,PDF 단독,,
+294,Joint 5 current,PDF 단독,,
+295,Joint 6 current,PDF 단독,,
+300,Joint 1 temp,PDF 단독,,
+301,Joint 2 temp,PDF 단독,,
+302,Joint 3 temp,PDF 단독,,
+303,Joint 4 temp,PDF 단독,,
+304,Joint 5 temp,PDF 단독,,
+305,Joint 6 temp,PDF 단독,,
+320,Base joint revolution count,PDF 단독,,
+321,Shoulder joint revolution count,PDF 단독,,
+322,Elbow joint revolution count,PDF 단독,,
+323,Wrist1 joint revolution count,PDF 단독,,
+324,Wrist2 joint revolution count,PDF 단독,,
+325,Wrist3 joint revolution count,PDF 단독,,
+400,TCP X,PDF 단독,,
+401,TCP Y,PDF 단독,,
+402,TCP Z,PDF 단독,,
+403,TCP RX,PDF 단독,,
+404,TCP RY,PDF 단독,,
+405,TCP RZ,PDF 단독,,
