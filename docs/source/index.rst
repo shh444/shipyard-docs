@@ -7,7 +7,7 @@
 .. image:: https://img.shields.io/badge/Protocol-Modbus_TCP-green
    :alt: Modbus TCP
 
-본 문서는 조선소 용접 자동화 시스템의 **Modbus TCP 신호 주소 맵**을 정의합니다.
+본 문서는 조선소 용접 자동화 시스템의 Modbus TCP 신호 주소 맵을 정의합니다.
 
 시스템 구성
 -----------
