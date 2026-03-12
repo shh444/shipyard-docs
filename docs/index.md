@@ -1,73 +1,79 @@
-# 용접 시스템 통신 프로토콜 통합 COMM
+```{toctree}
+:maxdepth: 2
+:caption: 목차
+:hidden:
 
-이 문서는 **UR Cobot / 펜던트 / 용접기** 사이의 Modbus TCP 주소 맵을 하나의 웹 매뉴얼로 통합한 초안입니다.
+self
+02_modbus_signals
+03_bitfields_enums
+04_errors_alarms
+05_ur_appendix
+```
 
-## 문서 제어
+# 1. 개요
+
+이 문서는 조선소 UR 용접 시스템의 통신 프로토콜 메뉴얼 입니다.  
+## 1.1 목적
+
+- 펜던트, 로봇, 용접기 사이의 Modbus TCP 주소를 한 곳에서 관리
+
+## 1.2 시스템 구성
+
+```{figure} _static/images/system_architecture.png
+---
+width: 100%
+alt: 시스템 구조(UR / Polyscope / Pendant / Power Source / Wire Feeder)
+---
+시스템 구조 개요(External Pendant ↔ Polyscope/UR ↔ Power Source/Wire Feeder)
+```
+
+```{figure} _static/images/hardware_overview.png
+---
+width: 90%
+alt: 하드웨어 개요(캐비닛, 로봇 컨트롤러, 팬던트, 토치/와이어피더)
+---
+하드웨어 구성
+```
+
+> 프로그램/URSCRIPT 상세 흐름은 5장(UR 컨트롤러 부록)에 추가로 수록했습니다.
+
+## 1.3 시스템 / 프로그램 구조
+
+아래 다이어그램은 URSCRIPT/폴리스코프 중심으로 구성된 통신 개요 및 프로그램 흐름을 요약한 참고 자료입니다.
+
+```{figure} _static/images/program_structure_detail.png
+---
+width: 100%
+alt: URSCRIPT/폴리스코프 중심 프로그램 구조(상세)
+---
+URSCRIPT/폴리스코프 중심 프로그램 구조(상세)
+```
+
+## 1.4 통신 인터페이스 사양(요약)
 
 | 항목 | 값 |
 | --- | --- |
-| 문서명 | 용접 시스템 통신 프로토콜 통합 COMM |
-| 버전 | 0.1.0 Draft |
-| 범위 | UR Native I/O, 로봇↔팬던트, 로봇↔용접기, 용접 조건 |
-| 기준 자료 | Pendant MODBUS_TCP_MAP PDF + 프로젝트 작업 시트 PNG |
-| 목적 | 주소, 비트필드, 핸드셰이크, 에러 코드를 한 곳에서 관리 |
+| 물리 계층 | Ethernet |
+| 프로토콜 | Modbus TCP |
+| 전송 속도 | 10Mbps / 100Mbps |
+| 통신 방식 | 로봇 Server / 팬던트 & 용접기 Client |
+| 기본 Port | 502 |
+| 기본 IP  | Hi-COMM 192.168.1.2 / UR 192.168.1.7  / Pendant 192.168.1.207 |
 
-## 시스템 구성
+## 1.5 주소 대분류
 
-```text
-[ Pendant UI ] --(161~199, 221~255)--> [ Robot Controller ] --(201~210)--> [ Welder ]
-[ Pendant UI ] <--(128~160)----------- [ Robot Controller ] <--(211~220)--- [ Welder ]
-[ UR Native ]  0,1,256,258,260,261,262,265,270~405  (Controller/Robot 상태)
-```
-
-## 소스 적용 원칙
-
-!!! note "우선순위"
-    1. 프로젝트 작업 시트(PNG)에 정의된 값을 **구현 기준값**으로 사용합니다.
-    2. PDF는 **기본 주소 맵**과 UR Native 부록의 기준 자료로 사용합니다.
-    3. 두 자료가 충돌하는 항목은 **소스 정합표**에 별도 기록했습니다.
-
-## 검증 상태 범례
-
-| 상태 | 뜻 |
-| --- | --- |
-| 일치 | PDF와 작업 시트가 일치하거나 서로를 보완함 |
-| 프로젝트 우선 | PDF와 충돌하지만 프로젝트 작업 시트 기준으로 적용 |
-| 작업시트 단독 | 작업 시트에만 정의되어 있음 |
-| PDF 단독 | PDF에만 있고 프로젝트 적용 여부는 미확정 |
-| 미확정 | 정보가 부족하여 Reserved/TBD로 유지 |
-
-## 주소 범위 한눈에 보기
-
-| 범위 | 방향 | 목적 |
+| 범위 | 방향 / 범주 | 내용 |
 | --- | --- | --- |
-| 0, 1 | UR Native | 디지털 I/O bit packing |
-| 128~160 | 로봇 → 팬던트 | 상태, 요청, 터치, 버전 |
-| 161~199 | 팬던트 → 로봇 | 작업 준비, 치수, 셀/플래그, 옵션 |
-| 201~210 | 로봇 → 용접기 | 용접기 제어, 설정 송신 |
-| 211~220 | 용접기 → 로봇 | 피드백, 오류, 파라미터 |
+| 128~160 | 로봇 → 팬던트 | 용접 진행 상태, 셀 정보, 터치 상태, 버전 |
+| 161~199 | 팬던트 → 로봇 | 작업 준비, 셀/치수 입력, 옵션/보정값 |
+| 201~210 | 로봇 → 용접기 | 용접기 사용, 제어, 전류/전압 설정 |
+| 211~220 | 용접기 → 로봇 | 피드백, 오류, 용접 파라미터 |
 | 221~255 | 팬던트 → 로봇 | 용접 조건 세트 |
-| 256~405 | UR Native | 컨트롤러 상태, 관절/툴 자세 |
+| 0~33, 128~255, 256~ | UR 모드버스 서버 | UR 상태 정보 (5장) |
 
-## 바로가기
+## 1.6 문서 구성
 
-- [통신 개요](protocol/overview.md)
-- [레지스터 맵 요약](protocol/register-map-summary.md)
-- [비트필드/열거형](protocol/bitfields-enums.md)
-- [시퀀스](protocol/sequences.md)
-- [에러/알람](protocol/errors-alarms.md)
-- [소스 정합표](protocol/source-reconciliation.md)
-
-## 다운로드
-
-- [전체 레지스터 CSV](assets/data/modbus_register_catalog.csv)
-- [전체 레지스터 JSON](assets/data/modbus_register_catalog.json)
-- [소스 정합표 CSV](assets/data/source_reconciliation.csv)
-
-## 초안에서 우선 확인할 항목
-
-1. **145 / 146**: PDF의 아크센싱 필드 대신 프로젝트 시트에서는 `셀 번호 / 셀 요청`으로 사용합니다.
-2. **171 / 172**: PDF는 `1~6`, 프로젝트 시트는 `A~e(1~8)`까지 확장되어 있습니다.
-3. **190~198**: PDF는 미사용 구간으로 보지만 프로젝트 시트는 `중간갭/바닥각도`로 사용합니다.
-4. **203**: PDF는 `용접 속도`, 프로젝트 시트는 `와이어 정보`로 정의되어 있습니다.
-5. **221 / 222**: PDF에서는 용접기→로봇, 프로젝트 시트에서는 팬던트→로봇 조건 영역으로 사용합니다.
+- **2장**: Modbus 신호 정리
+- **3장**: 비트필드 / 열거형
+- **4장**: 에러 / 알람
+- **5장**: UR 컨트롤러 부록
