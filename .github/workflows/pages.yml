@@ -31,13 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Disable Jekyll
-        run: |
-          touch docs/_build/html/.nojekyll
-
       - name: Build Sphinx site
         run: |
           sphinx-build -b html docs docs/_build/html
+          # GitHub Pages/Jekyll may ignore "_static" unless ".nojekyll" exists.
+          # (We also copy one via html_extra_path, but keep this for safety.)
+          touch docs/_build/html/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
