@@ -2,12 +2,13 @@
 
 이 저장소는 **Sphinx + MyST(Markdown)** 기반으로 구성된 웹 문서입니다.
 
-문서 페이지 구성(총 5페이지):
+문서 페이지 구성(총 6페이지):
 1. 개요 (index)
 2. Modbus 신호 일람
 3. 비트필드 / 열거형
 4. 에러 / 알람
 5. UR 컨트롤러 부록
+6. UR Dashboard Server (원격 명령 / 안전·보호정지 복구 로직)
 
 추가 리소스:
 - 시스템/프로그램/하드웨어 다이어그램 PNG는 `docs/_static/images/`에 포함되어 있습니다.
@@ -112,6 +113,7 @@ GitHub 저장소에서:
 - 3장(비트필드/열거형): `docs/03_bitfields_enums.md`
 - 4장(에러/알람): `docs/04_errors_alarms.md`
 - 5장(UR 부록): `docs/05_ur_appendix.md`
+- 6장(UR Dashboard): `docs/06_ur_dashboard.md`
 
 ---
 

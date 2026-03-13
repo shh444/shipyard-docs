@@ -8,6 +8,7 @@ self
 03_bitfields_enums
 04_errors_alarms
 05_ur_appendix
+06_ur_dashboard
 ```
 
 # 1. 개요
@@ -77,3 +78,4 @@ URSCRIPT/폴리스코프 중심 프로그램 구조(상세)
 - **3장**: 비트필드 / 열거형
 - **4장**: 에러 / 알람
 - **5장**: UR 컨트롤러 부록
+- **6장**: UR Dashboard Server (원격 명령) / 안전·보호정지 복구 로직
