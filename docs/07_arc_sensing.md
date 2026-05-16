@@ -379,4 +379,207 @@ end
 
 ## 7.4 Z 아크센싱 (스틱아웃 추정)
 
-> _작성 예정_ — 평균 전류 절대값을 기준 전류와 비교하여 스틱아웃 거리를 보정하는 로직을 정리합니다.
+X 아크센싱이 위빙 좌/우 반주기의 **상대적 차이**를 이용해 중심을 찾았다면, Z 아크센싱은 **사이클 평균 전류의 절대값**을 미리 정해 둔 **기준 전류(`Standard_Arc_Current`)** 와 비교하여 스틱아웃(stick-out) 거리를 보정합니다.
+
+```
+cycle1_middle > Standard_Arc_Current  →  실제 전류가 더 큼  →  토치가 모재에 가까움  →  Z 를 띄워야 함
+cycle1_middle < Standard_Arc_Current  →  실제 전류가 더 작음 →  토치가 모재에서 멈   →  Z 를 낮춰야 함
+```
+
+전반적 흐름은 [7.3](07_arc_sensing.md#7-3-x-아크센싱-센터-찾기) 의 X 보정과 동일하게 PI 제어 기반이며, **입력값의 정의 / 게인 스케일 / 출력 보호 방식**에서 차이가 있습니다.
+
+> 이번 절의 계산도 `diff_Thread` 스레드에서, **위빙 한 사이클이 끝난 시점에 1회** 수행됩니다.
+
+### 7.4.1 기준 전류 `Standard_Arc_Current` — 고정값 사용
+
+Z 보정의 핵심은 “**기준 전류를 얼마로 둘 것인가**” 입니다. 본 시스템은 **지령 전류(`current_to_welding_m`) 대비 고정값**을 `Standard_Arc_Current` 로 사용합니다.
+
+선택지 자체는 두 가지가 있습니다.
+
+1. **지령 전류 기반 고정값** (본 시스템 채택)
+   사용자가 지령한 용접 전류에 대응하는 “정상 스틱아웃일 때 기대되는 전류”를 사전에 정해 두고 그 값을 그대로 사용합니다.
+2. **초기 N 사이클(3~4 cycle) 평균을 기준값으로 사용**
+   터치센싱 등으로 **정확한 스틱아웃이 잡혀 있는 상태**에서 시작할 때, 첫 몇 사이클의 평균 전류를 기준값으로 그대로 쓸 수 있습니다. 원리적으로는 가장 정확합니다.
+
+본 시스템이 (1) 을 택한 이유는, 용접 시작 직후 몇 사이클은 **모따기 / 스패터 / 아크 점호 직후 불안정** 등의 변수가 크게 작용해 평균 전류가 실제 정상 상태를 대표하지 못하는 경우가 많기 때문입니다. 잘못된 기준값이 한 번 잡히면 이후 사이클 전체가 그 기준에 끌려가게 되므로, 본 시스템은 안전하게 **고정값** 으로 운용합니다.
+
+### 7.4.2 보정 조건 게이트
+
+X 와 달리 Z 는 **차이값이 의미 있는 크기일 때만** 보정합니다.
+
+```python
+arc_sensing_diff_z = Standard_Arc_Current - cycle1_middle
+
+if norm(arc_sensing_diff_z) > 0.2:
+    ...
+```
+
+| 조건 | 의미 | 왜 필요한가 |
+| --- | --- | --- |
+| `norm(Standard - cycle1_middle) > 0.2` | 기준값과 사이클 평균의 차이가 의미 있는 크기 | 노이즈 수준 차이까지 반응하면 Z 가 떨림 |
+
+> X 보정에서 사용했던 “지령전류 - 40 A” 가드는 Z 에서는 사용하지 않습니다. Z 는 절대값 비교가 본질이므로 이미 `Standard_Arc_Current` 자체가 안전 기준 역할을 합니다.
+
+### 7.4.3 전류차 → 적응형 게인
+
+차이의 **크기에 따라 PI 게인을 단계적으로 증폭**합니다. 임계값과 배율이 X 와 다릅니다.
+
+```python
+if   norm(arc_sensing_diff_z) > 10:   # 많이 벗어남
+    p_gain_u_z = th_arc_sen[3] / 1000 * 3.5
+    i_gain_u_z = th_arc_sen[4] / 1000 * 3
+elif norm(arc_sensing_diff_z) > 5:    # 중간
+    p_gain_u_z = th_arc_sen[3] / 1000 * 1.8
+    i_gain_u_z = th_arc_sen[4] / 1000 * 1.5
+else:                                 # 거의 기준값에 근접
+    p_gain_u_z = th_arc_sen[3] / 1000
+    i_gain_u_z = th_arc_sen[4] / 1000
+```
+
+| `arc_sensing_diff_z` | 해석 | 게인 배율 (P / I) | 의도 |
+| ---: | --- | ---: | --- |
+| `> 10 A` | 기준 스틱아웃에서 크게 벗어남 | **×3.5 / ×3** | 빠르게 정상 거리로 복귀 |
+| `5 ~ 10 A` | 약간 벗어남 | **×1.8 / ×1.5** | 적당한 속도로 보정 |
+| `≤ 5 A` | 기준에 근접 | **×1 / ×1** | 미세 보정만, 떨림 방지 |
+
+> X 에서 P 게인 분모가 `100` 이었던 것과 달리, Z 는 `1000` 입니다. 같은 `th_arc_sen` 값이라도 Z 가 한 자릿수 더 작은 게인으로 동작하도록 설계되어 있으며, 이는 **스틱아웃 변화가 X 보정만큼 빠르게 움직일 필요가 없기 때문**입니다.
+
+### 7.4.4 입력 안전 필터 — 차이값 클리핑
+
+게인을 곱하기 전, **`arc_sensing_diff_z` 자체를 ±10 으로 클리핑**합니다.
+
+```python
+if   arc_sensing_diff_z >  10: arc_sensing_diff_z =  10
+elif arc_sensing_diff_z < -10: arc_sensing_diff_z = -10
+```
+
+스패터 / 아크 끊김 직후 등으로 한 사이클의 평균 전류가 크게 튀더라도 보정량이 과도해지지 않도록 가드합니다.
+
+### 7.4.5 PI 제어
+
+X 와 동일한 형태의 PI 제어를 별도 적분기 `Ui_z` 로 수행합니다.
+
+```python
+Ts       = 1 / system_bus_ms
+
+Up_z     = arc_sensing_diff_z * p_gain_u_z
+Ui_z     = Ui_z + arc_sensing_diff_z * i_gain_u_z * Ts
+Pi_sum_z = Up_z + Ui_z
+```
+
+| 항 | 역할 |
+| --- | --- |
+| `Up_z` (비례, P) | 현재 사이클의 기준-평균 차이에 비례 |
+| `Ui_z` (적분, I) | 누적된 차이에 비례 — 정상상태 오차 제거 |
+| `Pi_sum_z` | 이번 사이클의 **최종 Z 이동량 후보** |
+
+> 적분기 `Ui_z` 는 X 의 `Ui` 와 **완전히 분리된 상태 변수** 입니다. X / Z 보정이 서로 간섭하지 않습니다.
+
+### 7.4.6 출력 안전 필터 — 클리핑(폐기 X)
+
+PI 출력이 한 사이클에 ±5 mm 를 넘으면 **그대로 클리핑** 합니다.
+
+```python
+if   Pi_sum_z >  5: Pi_sum_z =  5
+elif Pi_sum_z < -5: Pi_sum_z = -5
+```
+
+X 보정과 다른 점은 다음과 같습니다.
+
+| 축 | 한계 | 초과 시 동작 | 이유 |
+| --- | ---: | --- | --- |
+| X | ±7 mm | **0 으로 폐기** | X 가 한 번에 크게 이동하면 다음 사이클의 좌/우 비교 자체가 깨짐 — 차라리 이번 사이클을 건너뜀 |
+| Z | ±5 mm | **±5 로 클리핑** | Z 는 절대 기준 비교라 다음 사이클에 영향이 적음 — 큰 변화 시점에도 천천히라도 따라가는 편이 안전 |
+
+### 7.4.7 좌표계 반영
+
+최종 `Pi_sum_z` 에 아크센싱 사용 스위치(`arc_sens_onoff`) 를 곱한 값을 이번 사이클의 Z 오프셋으로 사용합니다.
+
+```python
+global arc_z_off = Pi_sum_z * arc_sens_onoff
+
+if th_par_2f == False:
+    th_wv_wp2 = feature_offset(
+        th_wv_wp2,
+        p[0, 0, arc_z_off / 1000, 0, 0, 0],   # mm → m, Z 축 방향
+        wv_Line_Feature2,
+    )
+end
+```
+
+- `feature_offset` 은 **용접 라인 기준 좌표계(`wv_Line_Feature2`)** 에서 오프셋을 적용합니다. 위빙 평면에 수직인 “스틱아웃 방향”이 곧 이 좌표계의 Z 축입니다.
+- `arc_z_off` 단위는 mm 이므로 `/1000` 으로 m 변환.
+- X 와 달리 부호를 뒤집지 않습니다. `Standard - cycle1_middle > 0` (실제 전류가 작음 → 토치가 멀어진 상태) 일 때 `arc_z_off` 가 양수가 되어 Z 를 모재 쪽으로 다시 내려보내는 방향이 자연스럽게 잡힙니다. 단, 이 부호 규약은 현장 셋업과 좌표계 정의에 따라 다를 수 있으니 최초 셋업 시 한 번 검증해 두면 됩니다.
+
+> **2F 예외**: `th_par_2f == True` 인 경우(2F 멀티패스 일부 버전) Z 보정도 반영하지 않습니다. 2F 위빙은 좌/우 모재 면이 서로 다른 거리/각도에 있어 사이클 평균 전류 자체가 “스틱아웃”을 대표하지 않게 됩니다.
+
+### 7.4.8 RTDE 로그
+
+X 와 별도의 레지스터에 P / I / 최종 이동량을 기록합니다.
+
+```python
+write_output_float_register(12, Up_z)      # P 항
+write_output_float_register(13, Ui_z)      # I 항
+write_output_float_register(5,  arc_z_off) # 최종 적용 Z 오프셋 [mm]
+```
+
+| 레지스터 | 내용 | 활용 |
+| ---: | --- | --- |
+| `output_float_register[12]` | `Up_z` | P 게인 튜닝 — 스틱아웃 변화에 대한 응답 속도 확인 |
+| `output_float_register[13]` | `Ui_z` | I 게인 튜닝 — 정상상태 스틱아웃 오차 확인 |
+| `output_float_register[5]`  | `arc_z_off` (mm) | 사이클별 실제 Z 이동량 — X 로그(`[4]`) 와 함께 보면 위빙 한 사이클의 보정 거동을 동시에 추적 가능 |
+
+### 7.4.9 전체 코드
+
+```python
+# ---------------------------- Z offset (스틱아웃 추정) ----------------------------
+arc_sensing_diff_z = Standard_Arc_Current - cycle1_middle
+
+if norm(arc_sensing_diff_z) > 0.2:
+
+    # 1) 차이 크기에 따른 적응형 게인
+    if norm(arc_sensing_diff_z) > 10:
+        p_gain_u_z = th_arc_sen[3] / 1000 * 3.5
+        i_gain_u_z = th_arc_sen[4] / 1000 * 3
+    elif norm(arc_sensing_diff_z) > 5:
+        p_gain_u_z = th_arc_sen[3] / 1000 * 1.8
+        i_gain_u_z = th_arc_sen[4] / 1000 * 1.5
+    else:
+        p_gain_u_z = th_arc_sen[3] / 1000
+        i_gain_u_z = th_arc_sen[4] / 1000
+    end
+
+    Ts = 1 / system_bus_ms
+
+    # 2) 입력 클리핑
+    if   arc_sensing_diff_z >  10: arc_sensing_diff_z =  10
+    elif arc_sensing_diff_z < -10: arc_sensing_diff_z = -10
+    end
+
+    # 3) PI 제어
+    Up_z     = arc_sensing_diff_z * p_gain_u_z
+    Ui_z     = Ui_z + arc_sensing_diff_z * i_gain_u_z * Ts
+    Pi_sum_z = Up_z + Ui_z
+
+    # 4) 출력 클리핑 (X 와 달리 0 폐기 X, 그대로 ±5 로 자름)
+    if   Pi_sum_z >  5: Pi_sum_z =  5
+    elif Pi_sum_z < -5: Pi_sum_z = -5
+    end
+
+    global arc_z_off = Pi_sum_z * arc_sens_onoff
+
+    # 5) 용접 좌표계에 반영 (2F 일부 버전 제외)
+    if th_par_2f == False:
+        th_wv_wp2 = feature_offset(
+            th_wv_wp2,
+            p[0, 0, arc_z_off / 1000, 0, 0, 0],
+            wv_Line_Feature2,
+        )
+    end
+
+    # 6) 로그
+    write_output_float_register(12, Up_z)
+    write_output_float_register(13, Ui_z)
+    write_output_float_register(5,  arc_z_off)
+end
+```
